@@ -1,2 +1,2 @@
 # Thompson_duplicated
-Implement thompson within MPAS/MONAN
+Duplicate thompson routines within MPAS/MONAN is the first phase towards the implementation of thompson_tempo (thompson_jensen)
