@@ -19,6 +19,7 @@
 !wrf physics:
  use module_mp_kessler
  use module_mp_thompson
+ use module_mp_thompson_duplicated
  use module_mp_wsm6,only: wsm6
  use mp_wsm6,only: mp_wsm6_init,refl10cm_wsm6
 
@@ -33,7 +34,8 @@
 
 !MPAS driver for parameterization of cloud microphysics processes.
 !Laura D. Fowler (send comments to laura@ucar.edu).
-!2013-05-01.
+!2013-05-01.''
+!Enver Ramirez (to include Thompson_Jensen)
 !
 ! subroutines in mpas_atmphys_driver_microphysics:
 ! ------------------------------------------------
@@ -50,6 +52,7 @@
 ! --------------------------------------------
 ! * module_mp_kessler : Kessler cloud microphysics.
 ! * module_mp_thompson: Thompson cloud microphysics.
+! * module_mp_thompson_duplicated: Thompson cloud microphysics.
 ! * module_mp_wsm6    : WSM6 cloud microphysics.
 !
 ! comments:
@@ -128,7 +131,7 @@
 
  microp_select: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6")
+    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated")
        !mass mixing ratios:
        if(.not.allocated(qi_p)        ) allocate(qi_p(ims:ime,kms:kme,jms:jme))
        if(.not.allocated(qs_p)        ) allocate(qs_p(ims:ime,kms:kme,jms:jme))
@@ -149,6 +152,18 @@
     microp2_select: select case(microp_scheme)
 
        case("mp_thompson")
+          !number concentrations:
+          if(.not.allocated(ntc_p)) allocate(ntc_p(ims:ime,jms:jme))
+          if(.not.allocated(muc_p)) allocate(muc_p(ims:ime,jms:jme))
+          if(.not.allocated(ni_p) ) allocate(ni_p(ims:ime,kms:kme,jms:jme))
+          if(.not.allocated(nr_p) ) allocate(nr_p(ims:ime,kms:kme,jms:jme))
+
+          if(.not.allocated(rainprod_p)) allocate(rainprod_p(ims:ime,kms:kme,jms:jme))
+          if(.not.allocated(evapprod_p)) allocate(evapprod_p(ims:ime,kms:kme,jms:jme))
+
+       case("mp_thompson_duplicated")
+          !!mass mixing ratios:
+          !if(.not.allocated(qi_p)        ) allocate(qi_p(ims:ime,kms:kme,jms:jme))
           !number concentrations:
           if(.not.allocated(ntc_p)) allocate(ntc_p(ims:ime,jms:jme))
           if(.not.allocated(muc_p)) allocate(muc_p(ims:ime,jms:jme))
@@ -202,7 +217,7 @@
 
  microp_select: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6")
+    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated")
        !mass mixing ratios:
        if(allocated(qi_p)         ) deallocate(qi_p         )
        if(allocated(qs_p)         ) deallocate(qs_p         )
@@ -223,6 +238,16 @@
     microp2_select: select case(microp_scheme)
 
        case("mp_thompson")
+          !number concentrations:
+          if(allocated(ntc_p)) deallocate(ntc_p)
+          if(allocated(muc_p)) deallocate(muc_p)
+          if(allocated(ni_p) ) deallocate(ni_p )
+          if(allocated(nr_p) ) deallocate(nr_p )
+
+          if(allocated(rainprod_p)) deallocate(rainprod_p)
+          if(allocated(evapprod_p)) deallocate(evapprod_p)
+
+       case("mp_thompson_duplicated")
           !number concentrations:
           if(allocated(ntc_p)) deallocate(ntc_p)
           if(allocated(muc_p)) deallocate(muc_p)
@@ -275,6 +300,10 @@
      case("mp_thompson")
         call thompson_init(l_mp_tables)
         call init_thompson_clouddroplets_forMPAS(mesh,sfc_input,diag_physics)
+
+     case("mp_thompson_duplicated")
+        call thompson_duplicated_init(l_mp_tables)
+        call init_thompson_duplicated_clouddroplets_forMPAS(mesh,sfc_input,diag_physics)
 
      case("mp_wsm6")
         call mp_wsm6_init(den0=rho_a,denr=rho_r,dens=rho_s,cl=cliq,cpv=cpv, &
