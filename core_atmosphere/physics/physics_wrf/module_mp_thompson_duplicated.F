@@ -411,7 +411,7 @@
       CONTAINS
 
 !=================================================================================================================
- subroutine thompson_init(l_mp_tables)
+ subroutine thompson_duplicated_init(l_mp_tables)
  implicit none
 !=================================================================================================================
 
@@ -971,7 +971,7 @@
 
       endif
 
-      END SUBROUTINE thompson_init
+      END SUBROUTINE thompson_duplicated_init
 !
 !+---+-----------------------------------------------------------------+
 !+---+-----------------------------------------------------------------+
@@ -979,7 +979,7 @@
 !+---+-----------------------------------------------------------------+
 !..This is a wrapper routine designed to transfer values from 3D to 1D.
 !+---+-----------------------------------------------------------------+
-      SUBROUTINE mp_gt_driver(qv, qc, qr, qi, qs, qg, ni, nr, nc,       &
+      SUBROUTINE mp_gt_driver_duplicated(qv, qc, qr, qi, qs, qg, ni, nr, nc,       &
                               nwfa, nifa, nwfa2d,                       &
                               th, pii, p, w, dz, dt_in, itimestep,      &
                               RAINNC, RAINNCV, &
@@ -1341,7 +1341,7 @@
          mp_debug(i:i) = char(0)
       enddo
 
-      END SUBROUTINE mp_gt_driver
+      END SUBROUTINE mp_gt_driver_duplicated
 
 !+---+-----------------------------------------------------------------+
 !ctrlL
@@ -4823,7 +4823,7 @@
 !.. melting level interface.
 !+---+-----------------------------------------------------------------+
 
-      subroutine calc_refl10cm (qv1d, qc1d, qr1d, nr1d, qs1d, qg1d,     &
+      subroutine calc_refl10cm_duplicated (qv1d, qc1d, qr1d, nr1d, qs1d, qg1d,     &
                           t1d, p1d, dBZ, kts, kte, ii, jj)
 
       IMPLICIT NONE
@@ -5123,7 +5123,7 @@
 !    &                / (ze_rain(k)+ze_snow(k)+ze_graupel(k))
 !     enddo
 
-      end subroutine calc_refl10cm
+      end subroutine calc_refl10cm_duplicated
 !
 !+---+-----------------------------------------------------------------+
 
