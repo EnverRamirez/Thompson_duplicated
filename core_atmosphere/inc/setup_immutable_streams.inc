@@ -300,19 +300,19 @@ function atm_setup_immutable_streams(manager) result(iErr)
    call MPAS_stream_mgr_add_field(manager, 'restart', 'rtheta_p', ierr=ierr)
    call MPAS_stream_mgr_add_field(manager, 'restart', 'rho_p', ierr=ierr)
    call MPAS_stream_mgr_add_field(manager, 'restart', 'surface_pressure', ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in'
+   write(packages,'(a)') 'mp_thompson_in; mp_thompson_duplicated_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 'rainprod', packages=packages, ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in'
+   write(packages,'(a)') 'mp_thompson_in; mp_thompson_duplicated_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 'evapprod', packages=packages, ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in;mp_wsm6_in'
+   write(packages,'(a)') 'mp_thompson_in;mp_thompson_duplicated_in;mp_wsm6_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 're_cloud', packages=packages, ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in;mp_wsm6_in'
+   write(packages,'(a)') 'mp_thompson_in;mp_thompson_duplicated_in;mp_wsm6_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 're_ice', packages=packages, ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in;mp_wsm6_in'
+   write(packages,'(a)') 'mp_thompson_in;mp_thompson_duplicated_in;mp_wsm6_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 're_snow', packages=packages, ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in'
+   write(packages,'(a)') 'mp_thompson_in;mp_thompson_duplicated_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 'nt_c', packages=packages, ierr=ierr)
-   write(packages,'(a)') 'mp_thompson_in'
+   write(packages,'(a)') 'mp_thompson_in;mp_thompson_duplicated_in'
    call MPAS_stream_mgr_add_field(manager, 'restart', 'mu_c', packages=packages, ierr=ierr)
    call MPAS_stream_mgr_add_field(manager, 'restart', 'tend_sfc_pressure', ierr=ierr)
    call MPAS_stream_mgr_add_field(manager, 'restart', 'rt_diabatic_tend', ierr=ierr)

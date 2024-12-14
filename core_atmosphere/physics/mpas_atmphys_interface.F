@@ -561,7 +561,7 @@
 !additional initialization as function of cloud microphysics scheme:
  microp_select_init: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6")
+    case ("mp_thompson","mp_thompson_duplicated","mp_wsm6")
        qi   => scalars(index_qi,:,:)
        qs   => scalars(index_qs,:,:)
        qg   => scalars(index_qg,:,:)
@@ -582,6 +582,27 @@
     microp2_select: select case(microp_scheme)
 
        case("mp_thompson")
+          ni   => scalars(index_ni,:,:)
+          nr   => scalars(index_nr,:,:)
+
+          do j = jts,jte
+          do i = its,ite
+             muc_p(i,j) = mu_c(i)
+             ntc_p(i,j) = nt_c(i)
+          enddo
+          enddo
+          do j = jts, jte
+          do k = kts, kte
+          do i = its, ite
+             ni_p(i,k,j) = ni(k,i)
+             nr_p(i,k,j) = nr(k,i)
+             rainprod_p(i,k,j) = rainprod(k,i)
+             evapprod_p(i,k,j) = evapprod(k,i)
+          enddo
+          enddo
+          enddo
+
+       case("mp_thompson_duplicated")
           ni   => scalars(index_ni,:,:)
           nr   => scalars(index_nr,:,:)
 
@@ -748,7 +769,7 @@
 !variables specific to different cloud microphysics schemes:
  microp_select_init: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6")
+    case ("mp_thompson","mp_thompson_duplicated","mp_wsm6")
        qi   => scalars(index_qi,:,:)
        qs   => scalars(index_qs,:,:)
        qg   => scalars(index_qg,:,:)
@@ -769,6 +790,21 @@
     microp2_select: select case(microp_scheme)
 
        case("mp_thompson")
+          ni   => scalars(index_ni,:,:)
+          nr   => scalars(index_nr,:,:)
+
+          do j = jts, jte
+          do k = kts, kte
+          do i = its, ite
+             ni(k,i) = ni_p(i,k,j)
+             nr(k,i) = nr_p(i,k,j)
+             rainprod(k,i) = rainprod_p(i,k,j)
+             evapprod(k,i) = evapprod_p(i,k,j)
+          enddo
+          enddo
+          enddo
+
+       case("mp_thompson_duplicated")
           ni   => scalars(index_ni,:,:)
           nr   => scalars(index_nr,:,:)
 

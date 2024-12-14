@@ -688,6 +688,12 @@
     dt_microp = dt_dyn / n_microp
     if(dt_dyn <= dt_microp) dt_microp = dt_dyn
  endif
+ if(trim(config_microp_scheme)=='mp_thompson_duplicated') then
+    dt_microp = 90._RKIND
+    n_microp  = max(nint(dt_dyn/dt_microp),1)
+    dt_microp = dt_dyn / n_microp
+    if(dt_dyn <= dt_microp) dt_microp = dt_dyn
+ endif
  call mpas_log_write('--- specifics on cloud microphysics option microp_scheme = '//trim(config_microp_scheme))
  call mpas_log_write('--- dt_microp = $r', realArgs=(/dt_microp/))
  call mpas_log_write('--- n_microp  = $i', intArgs=(/n_microp/))
@@ -744,7 +750,8 @@
  has_reqs = 0
  if(config_microp_re) then
     if(trim(config_microp_scheme)=='mp_thompson' .or. &
-       trim(config_microp_scheme)=='mp_wsm6') then
+       trim(config_microp_scheme)=='mp_wsm6' .or.  &
+       trim(config_microp_scheme)=='mp_thompson_duplicated') then
        if(trim(config_radt_lw_scheme)=='rrtmg_lw' .and. trim(config_radt_sw_scheme)=='rrtmg_sw') then
           has_reqc = 1
           has_reqi = 1

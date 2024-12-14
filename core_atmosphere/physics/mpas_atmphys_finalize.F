@@ -10,6 +10,8 @@
  use mpas_pool_routines
 
  use module_mp_thompson
+ use module_mp_thompson_duplicated
+
 
  implicit none
  private
@@ -45,6 +47,9 @@
 
  if(trim(config_microp_scheme) == 'mp_thompson') &
     call mp_thompson_deallocate
+
+ if(trim(config_microp_scheme) == 'mp_thompson_duplicated') &
+    call mp_thompson_duplicated_deallocate
 
  end subroutine atmphys_finalize
 
@@ -92,6 +97,49 @@
 
  end subroutine mp_thompson_deallocate
 
+!=================================================================================================================
+ subroutine mp_thompson_duplicated_deallocate
+!=================================================================================================================
+!call mpas_log_write('')
+!call mpas_log_write('--- enter subroutine mp_thompson_deallocate:')
+
+ if(allocated(tcg_racg) ) deallocate(tcg_racg ) 
+ if(allocated(tmr_racg) ) deallocate(tmr_racg )
+ if(allocated(tcr_gacr) ) deallocate(tcr_gacr )
+ if(allocated(tmg_gacr) ) deallocate(tmg_gacr )
+ if(allocated(tnr_racg) ) deallocate(tnr_racg )
+ if(allocated(tnr_gacr) ) deallocate(tnr_gacr )
+ if(allocated(tcs_racs1)) deallocate(tcs_racs1)
+ if(allocated(tmr_racs1)) deallocate(tmr_racs1)
+ if(allocated(tcs_racs2)) deallocate(tcs_racs2)
+ if(allocated(tmr_racs2)) deallocate(tmr_racs2)
+ if(allocated(tcr_sacr1)) deallocate(tcr_sacr1)
+ if(allocated(tms_sacr1)) deallocate(tms_sacr1)
+ if(allocated(tcr_sacr2)) deallocate(tcr_sacr2)
+ if(allocated(tms_sacr2)) deallocate(tms_sacr2)
+ if(allocated(tnr_racs1)) deallocate(tnr_racs1)
+ if(allocated(tnr_racs2)) deallocate(tnr_racs2)
+ if(allocated(tnr_sacr1)) deallocate(tnr_sacr1)
+ if(allocated(tnr_sacr2)) deallocate(tnr_sacr2)
+ if(allocated(tpi_qcfz) ) deallocate(tpi_qcfz )
+ if(allocated(tni_qcfz) ) deallocate(tni_qcfz )
+ if(allocated(tpi_qrfz) ) deallocate(tpi_qrfz )
+ if(allocated(tpg_qrfz) ) deallocate(tpg_qrfz )
+ if(allocated(tni_qrfz) ) deallocate(tni_qrfz )
+ if(allocated(tnr_qrfz) ) deallocate(tnr_qrfz )
+ if(allocated(tps_iaus) ) deallocate(tps_iaus )
+ if(allocated(tni_iaus) ) deallocate(tni_iaus )
+ if(allocated(tpi_ide)  ) deallocate(tpi_ide  )
+ if(allocated(t_efrw)   ) deallocate(t_efrw   )
+ if(allocated(t_efsw)   ) deallocate(t_efsw   )
+ if(allocated(tnr_rev)  ) deallocate(tnr_rev  )
+ if(allocated(tpc_wev)  ) deallocate(tpc_wev  )
+ if(allocated(tnc_wev)  ) deallocate(tnc_wev  )
+ if(allocated(tnccn_act)) deallocate(tnccn_act)
+
+!call mpas_log_write('--- end subroutine mp_thompson_deallocate')
+
+ end subroutine mp_thompson_duplicated_deallocate
 !=================================================================================================================
  end module mpas_atmphys_finalize
 !=================================================================================================================

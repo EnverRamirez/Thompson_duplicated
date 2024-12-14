@@ -8,6 +8,7 @@
 !=================================================================================================================
  module atmphys_build_tables_thompson
  use module_mp_thompson
+ use module_mp_thompson_duplicated
 
  implicit none
  private
