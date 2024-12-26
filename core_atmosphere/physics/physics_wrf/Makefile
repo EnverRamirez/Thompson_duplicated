@@ -20,6 +20,7 @@ OBJS = \
 	module_cu_kfeta.o              \
 	module_mp_kessler.o            \
 	module_mp_thompson.o           \
+	module_mp_thompson_duplicated.o           \
 	module_mp_thompson_cldfra3.o   \
 	module_mp_wsm6.o               \
 	module_ra_cam.o                \

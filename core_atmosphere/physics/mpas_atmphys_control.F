@@ -149,6 +149,7 @@
 
  else if (trim(config_physics_suite) == 'monan_convection_permitting') then
 
+
     if (trim(config_microp_scheme)     == 'suite') config_microp_scheme     = 'mp_thompson'
     if (trim(config_convection_scheme) == 'suite') config_convection_scheme = 'cu_grell_freitas'
     if (trim(config_pbl_scheme)        == 'suite') config_pbl_scheme        = 'bl_mynn'
@@ -183,6 +184,7 @@
  if(.not. (config_microp_scheme .eq. 'off'         .or. &
            config_microp_scheme .eq. 'mp_kessler'  .or. &
            config_microp_scheme .eq. 'mp_thompson' .or. &
+           config_microp_scheme .eq. 'mp_thompson_duplicated' .or. &
            config_microp_scheme .eq. 'mp_wsm6')) then
 
     write(mpas_err_message,'(A,A10)') 'illegal value for config_microp_scheme:', &
@@ -412,7 +414,8 @@
  if(dminfo % my_proc_id == IO_NODE) then
 
     call mpas_pool_get_config(configs,'config_microp_scheme',config_microp_scheme)
-    if(config_microp_scheme /= "mp_thompson") return
+    if(config_microp_scheme /= "mp_thompson" .or. &
+       config_microp_scheme /= "mp_thompson_duplicated" ) return
 
     l_qr_acr_qg = .false.
     l_qr_acr_qs = .false.

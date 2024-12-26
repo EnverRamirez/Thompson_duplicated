@@ -43,6 +43,7 @@
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -63,6 +64,7 @@
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -2353,6 +2355,7 @@
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -2373,6 +2376,7 @@
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -2413,7 +2417,7 @@
 ! Define constituent var qc
 ! My packages are bl_mynn_in;bl_ysu_in;cu_ntiedtke_in;mp_kessler_in;mp_thompson_in;mp_wsm6_in
       if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. mp_thompson_inActive .or. &
-mp_wsm6_inActive) then
+mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qc', index_counter)
@@ -2433,7 +2437,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qr
 ! My packages are mp_kessler_in;mp_thompson_in;mp_wsm6_in
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive  .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qr', index_counter)
@@ -2453,7 +2457,8 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qi
 ! My packages are bl_mynn_in;bl_ysu_in;cu_ntiedtke_in;mp_thompson_in;mp_wsm6_in
-      if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_thompson_inActive .or. &
+	     mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qi', index_counter)
@@ -2473,7 +2478,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qs
 ! My packages are bl_mynn_in;mp_thompson_in;mp_wsm6_in
-      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qs', index_counter)
@@ -2493,7 +2498,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qg
 ! My packages are mp_thompson_in;mp_wsm6_in
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qg', index_counter)
@@ -2526,7 +2531,7 @@ mp_wsm6_inActive) then
 ! Starting group number
 ! Define constituent var ni
 ! My Packages are bl_mynn_in;mp_thompson_in
-      if (bl_mynn_inActive .or. mp_thompson_inActive) then
+      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_ni', index_counter)
@@ -2547,6 +2552,20 @@ mp_wsm6_inActive) then
 ! Define constituent var nr
 ! My packages are mp_thompson_in
       if (mp_thompson_inActive) then
+         index_counter = index_counter + 1
+         if (associated(newSubPool)) then
+            call mpas_pool_add_dimension(newSubPool, 'index_nr', index_counter)
+         end if
+         group_counter = group_counter + 1
+         if (.not. group_started) then
+            group_start = index_counter
+            if (associated(newSubPool)) then
+               call mpas_pool_add_dimension(newSubPool, 'number_start', group_start)
+            end if
+            group_started = .true.
+         end if
+      else
+      if (mp_thompson_duplicated_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_nr', index_counter)
@@ -3822,6 +3841,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -3842,6 +3862,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -9500,6 +9521,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -9520,6 +9542,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -9560,7 +9583,7 @@ mp_wsm6_inActive) then
 ! Define constituent var tend_qc
 ! My packages are bl_mynn_in;bl_ysu_in;cu_ntiedtke_in;mp_kessler_in;mp_thompson_in;mp_wsm6_in
       if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. mp_thompson_inActive .or. &
-mp_wsm6_inActive) then
+          mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qc', index_counter)
@@ -9580,7 +9603,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var tend_qr
 ! My packages are mp_kessler_in;mp_thompson_in;mp_wsm6_in
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qr', index_counter)
@@ -9620,7 +9643,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var tend_qs
 ! My packages are bl_mynn_in;mp_thompson_in;mp_wsm6_in
-      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qs', index_counter)
@@ -9640,7 +9663,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var tend_qg
 ! My packages are mp_thompson_in;mp_wsm6_in
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qg', index_counter)
@@ -9673,7 +9696,7 @@ mp_wsm6_inActive) then
 ! Starting group number
 ! Define constituent var tend_ni
 ! My Packages are bl_mynn_in;mp_thompson_in
-      if (bl_mynn_inActive .or. mp_thompson_inActive) then
+      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_ni', index_counter)
@@ -9694,6 +9717,20 @@ mp_wsm6_inActive) then
 ! Define constituent var tend_nr
 ! My packages are mp_thompson_in
       if (mp_thompson_inActive) then
+         index_counter = index_counter + 1
+         if (associated(newSubPool)) then
+            call mpas_pool_add_dimension(newSubPool, 'index_nr', index_counter)
+         end if
+         group_counter = group_counter + 1
+         if (.not. group_started) then
+            group_start = index_counter
+            if (associated(newSubPool)) then
+               call mpas_pool_add_dimension(newSubPool, 'number_start', group_start)
+            end if
+            group_started = .true.
+         end if
+      else
+      if (mp_thompson_duplicated_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_nr', index_counter)
@@ -10217,6 +10254,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -10237,6 +10275,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -10282,7 +10321,8 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var lbc_qc
 ! My packages are bl_mynn_in;cu_ntiedtke_in;mp_kessler_in;mp_thompson_in;mp_wsm6_in
-      if (bl_mynn_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (bl_mynn_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. mp_thompson_inActive  &
+	      .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qc', index_counter)
@@ -10302,7 +10342,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var lbc_qr
 ! My packages are mp_kessler_in;mp_thompson_in;mp_wsm6_in
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qr', index_counter)
@@ -10322,7 +10362,8 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var lbc_qi
 ! My packages are bl_mynn_in;cu_ntiedtke_in;mp_thompson_in;mp_wsm6_in
-      if (bl_mynn_inActive .or. cu_ntiedtke_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (bl_mynn_inActive .or. cu_ntiedtke_inActive .or. mp_thompson_inActive &
+	      .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qi', index_counter)
@@ -10342,7 +10383,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var lbc_qs
 ! My packages are mp_thompson_in;mp_wsm6_in
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qs', index_counter)
@@ -10362,7 +10403,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var lbc_qg
 ! My packages are mp_thompson_in;mp_wsm6_in
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qg', index_counter)
@@ -10409,13 +10450,27 @@ mp_wsm6_inActive) then
             group_started = .true.
          end if
       else
+      if (mp_thompson_duplicated_inActive) then
+         index_counter = index_counter + 1
+         if (associated(newSubPool)) then
+            call mpas_pool_add_dimension(newSubPool, 'index_nr', index_counter)
+         end if
+         group_counter = group_counter + 1
+         if (.not. group_started) then
+            group_start = index_counter
+            if (associated(newSubPool)) then
+               call mpas_pool_add_dimension(newSubPool, 'number_start', group_start)
+            end if
+            group_started = .true.
+         end if
+      else
            if (associated(newSubPool)) then
               call mpas_pool_add_dimension(newSubPool, 'index_nr', -1)
            end if
       end if
 ! Define constituent var lbc_ni
 ! My packages are bl_mynn_in;mp_thompson_in
-      if (bl_mynn_inActive .or. mp_thompson_inActive) then
+      if (bl_mynn_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_ni', index_counter)
@@ -10746,7 +10801,7 @@ mp_wsm6_inActive) then
       r3aPtr(2) % block => block
 
       if (limited_areaActive .or. bl_mynn_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. mp_thompson_inActive &
-.or. mp_wsm6_inActive) then
+.or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r3aPtr(1) % isActive = .true.
          r3aPtr(2) % isActive = .true.
       end if
@@ -11181,6 +11236,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -11201,6 +11257,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -11300,6 +11357,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -11320,6 +11378,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -11524,7 +11583,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'refl10cm_max', r1Ptr)
@@ -11550,7 +11609,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'refl10cm_1km', r1Ptr)
@@ -11577,7 +11636,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'refl10cm_1km_max', r1Ptr)
@@ -11604,7 +11663,7 @@ mp_wsm6_inActive) then
       i1Ptr % missingValue = MPAS_INT_FILLVAL
       i1Ptr % block => block
 
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          i1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'i_rainnc', i1Ptr)
@@ -11630,7 +11689,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'rainncv', r1Ptr)
@@ -11656,7 +11715,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'snowncv', r1Ptr)
@@ -11682,7 +11741,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'graupelncv', r1Ptr)
@@ -11708,7 +11767,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'rainnc', r1Ptr)
@@ -11734,7 +11793,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'snownc', r1Ptr)
@@ -11760,7 +11819,7 @@ mp_wsm6_inActive) then
       r1Ptr % missingValue = MPAS_REAL_FILLVAL
       r1Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r1Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'graupelnc', r1Ptr)
@@ -11790,6 +11849,11 @@ mp_wsm6_inActive) then
       if (mp_thompson_inActive) then
          r2Ptr % isActive = .true.
       end if
+
+      if (mp_thompson_duplicated_inActive) then
+         r2Ptr % isActive = .true.
+      end if
+
       call mpas_pool_add_field(newSubPool, 'rainprod', r2Ptr)
       call mpas_pool_add_field(block % allFields, 'rainprod', r2Ptr)
 
@@ -11817,6 +11881,11 @@ mp_wsm6_inActive) then
       if (mp_thompson_inActive) then
          r2Ptr % isActive = .true.
       end if
+
+      if (mp_thompson_duplicated_inActive) then
+         r2Ptr % isActive = .true.
+      end if
+
       call mpas_pool_add_field(newSubPool, 'evapprod', r2Ptr)
       call mpas_pool_add_field(block % allFields, 'evapprod', r2Ptr)
 
@@ -11841,7 +11910,7 @@ mp_wsm6_inActive) then
       r2Ptr % missingValue = MPAS_REAL_FILLVAL
       r2Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r2Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 're_cloud', r2Ptr)
@@ -11868,7 +11937,7 @@ mp_wsm6_inActive) then
       r2Ptr % missingValue = MPAS_REAL_FILLVAL
       r2Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r2Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 're_ice', r2Ptr)
@@ -11895,7 +11964,7 @@ mp_wsm6_inActive) then
       r2Ptr % missingValue = MPAS_REAL_FILLVAL
       r2Ptr % block => block
 
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r2Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 're_snow', r2Ptr)
@@ -11924,6 +11993,11 @@ mp_wsm6_inActive) then
       if (mp_thompson_inActive) then
          r1Ptr % isActive = .true.
       end if
+
+      if (mp_thompson_duplicated_inActive) then
+         r1Ptr % isActive = .true.
+      end if
+
       call mpas_pool_add_field(newSubPool, 'nt_c', r1Ptr)
       call mpas_pool_add_field(block % allFields, 'nt_c', r1Ptr)
 
@@ -11950,6 +12024,11 @@ mp_wsm6_inActive) then
       if (mp_thompson_inActive) then
          r1Ptr % isActive = .true.
       end if
+
+      if (mp_thompson_duplicated_inActive) then
+         r1Ptr % isActive = .true.
+      end if
+
       call mpas_pool_add_field(newSubPool, 'mu_c', r1Ptr)
       call mpas_pool_add_field(block % allFields, 'mu_c', r1Ptr)
 
@@ -17123,6 +17202,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -17143,6 +17223,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -17927,6 +18008,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -17947,6 +18029,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -18072,6 +18155,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -18092,6 +18176,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -19078,6 +19163,7 @@ mp_wsm6_inActive) then
 
       logical, pointer :: mp_kessler_inActive
       logical, pointer :: mp_thompson_inActive
+      logical, pointer :: mp_thompson_duplicated_inActive
       logical, pointer :: mp_wsm6_inActive
       logical, pointer :: cu_grell_freitas_inActive
       logical, pointer :: cu_kain_fritsch_inActive
@@ -19098,6 +19184,7 @@ mp_wsm6_inActive) then
       group_start = -1
       call mpas_pool_get_package(packagePool, 'mp_kessler_inActive', mp_kessler_inActive)
       call mpas_pool_get_package(packagePool, 'mp_thompson_inActive', mp_thompson_inActive)
+      call mpas_pool_get_package(packagePool, 'mp_thompson_duplicated_inActive', mp_thompson_duplicated_inActive)
       call mpas_pool_get_package(packagePool, 'mp_wsm6_inActive', mp_wsm6_inActive)
       call mpas_pool_get_package(packagePool, 'cu_grell_freitas_inActive', cu_grell_freitas_inActive)
       call mpas_pool_get_package(packagePool, 'cu_kain_fritsch_inActive', cu_kain_fritsch_inActive)
@@ -19144,7 +19231,7 @@ mp_wsm6_inActive) then
 ! Define constituent var qc_amb
 ! My packages are bl_mynn_in;bl_ysu_in;cu_ntiedtke_in;mp_kessler_in;mp_thompson_in;mp_wsm6_in
       if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. mp_thompson_inActive .or. &
-mp_wsm6_inActive) then
+          mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qc', index_counter)
@@ -19164,7 +19251,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qr_amb
 ! My packages are mp_kessler_in;mp_thompson_in;mp_wsm6_in
-      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_kessler_inActive .or. mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qr', index_counter)
@@ -19184,7 +19271,8 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qi_amb
 ! My packages are bl_mynn_in;bl_ysu_in;cu_ntiedtke_in;mp_thompson_in;mp_wsm6_in
-      if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_thompson_inActive .or. &
+	      mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qi', index_counter)
@@ -19204,7 +19292,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qs_amb
 ! My packages are mp_thompson_in;mp_wsm6_in
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qs', index_counter)
@@ -19224,7 +19312,7 @@ mp_wsm6_inActive) then
       end if
 ! Define constituent var qg_amb
 ! My packages are mp_thompson_in;mp_wsm6_in
-      if (mp_thompson_inActive .or. mp_wsm6_inActive) then
+      if (mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
             call mpas_pool_add_dimension(newSubPool, 'index_qg', index_counter)
@@ -19372,7 +19460,7 @@ mp_wsm6_inActive) then
       r3Ptr % block => block
 
       if (iauActive .or. bl_mynn_inActive .or. bl_ysu_inActive .or. cu_ntiedtke_inActive .or. mp_kessler_inActive .or. &
-mp_thompson_inActive .or. mp_wsm6_inActive) then
+mp_thompson_inActive .or. mp_thompson_duplicated_inActive .or. mp_wsm6_inActive) then
          r3Ptr % isActive = .true.
       end if
       call mpas_pool_add_field(newSubPool, 'scalars', r3Ptr)
