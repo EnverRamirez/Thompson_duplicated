@@ -33,7 +33,8 @@
 
 !MPAS driver for parameterization of cloud microphysics processes.
 !Laura D. Fowler (send comments to laura@ucar.edu).
-!2013-05-01.
+!2013-05-01.''
+!Enver Ramirez (to include Thompson_Jensen)
 !
 ! subroutines in mpas_atmphys_driver_microphysics:
 ! ------------------------------------------------

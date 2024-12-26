@@ -104,6 +104,8 @@
 !call mpas_log_write('')
 !call mpas_log_write('--- enter subroutine physics_namelist_check:')
 
+! call mpas_log_write('-- Enver which mic '''//trim(config_physics_suite)//''' -----')
+
  call mpas_pool_get_config(configs,'config_physics_suite'    ,config_physics_suite    )
  call mpas_pool_get_config(configs,'config_microp_scheme'    ,config_microp_scheme    )
  call mpas_pool_get_config(configs,'config_convection_scheme',config_convection_scheme)
@@ -134,6 +136,18 @@
     if (trim(config_lsm_scheme)        == 'suite') config_lsm_scheme        = 'sf_noah'
 
  else if (trim(config_physics_suite) == 'convection_permitting') then
+
+    if (trim(config_microp_scheme)     == 'suite') config_microp_scheme     = 'mp_thompson'
+    if (trim(config_convection_scheme) == 'suite') config_convection_scheme = 'cu_grell_freitas'
+    if (trim(config_pbl_scheme)        == 'suite') config_pbl_scheme        = 'bl_mynn'
+    if (trim(config_gwdo_scheme)       == 'suite') config_gwdo_scheme       = 'bl_ysu_gwdo'
+    if (trim(config_radt_lw_scheme)    == 'suite') config_radt_lw_scheme    = 'rrtmg_lw'
+    if (trim(config_radt_sw_scheme)    == 'suite') config_radt_sw_scheme    = 'rrtmg_sw'
+    if (trim(config_radt_cld_scheme)   == 'suite') config_radt_cld_scheme   = 'cld_fraction'
+    if (trim(config_sfclayer_scheme)   == 'suite') config_sfclayer_scheme   = 'sf_mynn'
+    if (trim(config_lsm_scheme)        == 'suite') config_lsm_scheme        = 'sf_noah'
+
+ else if (trim(config_physics_suite) == 'monan_convection_permitting') then
 
     if (trim(config_microp_scheme)     == 'suite') config_microp_scheme     = 'mp_thompson'
     if (trim(config_convection_scheme) == 'suite') config_convection_scheme = 'cu_grell_freitas'
