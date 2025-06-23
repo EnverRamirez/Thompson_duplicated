@@ -20,6 +20,7 @@
  use module_mp_kessler
  use module_mp_thompson
  use module_mp_thompson_duplicated
+ use module_mp_tempo
  use module_mp_wsm6,only: wsm6
  use mp_wsm6,only: mp_wsm6_init,refl10cm_wsm6
 
@@ -131,7 +132,7 @@
 
  microp_select: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated")
+    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated","mp_tempo")
        !mass mixing ratios:
        if(.not.allocated(qi_p)        ) allocate(qi_p(ims:ime,kms:kme,jms:jme))
        if(.not.allocated(qs_p)        ) allocate(qs_p(ims:ime,kms:kme,jms:jme))
@@ -162,6 +163,18 @@
           if(.not.allocated(evapprod_p)) allocate(evapprod_p(ims:ime,kms:kme,jms:jme))
 
        case("mp_thompson_duplicated")
+          !!mass mixing ratios:
+          !if(.not.allocated(qi_p)        ) allocate(qi_p(ims:ime,kms:kme,jms:jme))
+          !number concentrations:
+          if(.not.allocated(ntc_p)) allocate(ntc_p(ims:ime,jms:jme))
+          if(.not.allocated(muc_p)) allocate(muc_p(ims:ime,jms:jme))
+          if(.not.allocated(ni_p) ) allocate(ni_p(ims:ime,kms:kme,jms:jme))
+          if(.not.allocated(nr_p) ) allocate(nr_p(ims:ime,kms:kme,jms:jme))
+
+          if(.not.allocated(rainprod_p)) allocate(rainprod_p(ims:ime,kms:kme,jms:jme))
+          if(.not.allocated(evapprod_p)) allocate(evapprod_p(ims:ime,kms:kme,jms:jme))
+
+       case("mp_tempo")
           !!mass mixing ratios:
           !if(.not.allocated(qi_p)        ) allocate(qi_p(ims:ime,kms:kme,jms:jme))
           !number concentrations:
@@ -217,7 +230,7 @@
 
  microp_select: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated")
+    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated","mp_tempo")
        !mass mixing ratios:
        if(allocated(qi_p)         ) deallocate(qi_p         )
        if(allocated(qs_p)         ) deallocate(qs_p         )
@@ -248,6 +261,16 @@
           if(allocated(evapprod_p)) deallocate(evapprod_p)
 
        case("mp_thompson_duplicated")
+          !number concentrations:
+          if(allocated(ntc_p)) deallocate(ntc_p)
+          if(allocated(muc_p)) deallocate(muc_p)
+          if(allocated(ni_p) ) deallocate(ni_p )
+          if(allocated(nr_p) ) deallocate(nr_p )
+
+          if(allocated(rainprod_p)) deallocate(rainprod_p)
+          if(allocated(evapprod_p)) deallocate(evapprod_p)
+
+       case("mp_tempo")
           !number concentrations:
           if(allocated(ntc_p)) deallocate(ntc_p)
           if(allocated(muc_p)) deallocate(muc_p)
@@ -302,8 +325,14 @@
         call init_thompson_clouddroplets_forMPAS(mesh,sfc_input,diag_physics)
 
      case("mp_thompson_duplicated")
-        call thompson_duplicated_init(l_mp_tables)
+        call thompson_duplicated_init(l_mp_tables)  !aqui se leen las tablas de thompson
         call init_thompson_duplicated_clouddroplets_forMPAS(mesh,sfc_input,diag_physics)
+        !fue creada ver mpas_atmphys_init_microphysics.F
+
+     case("mp_tempo")
+        call tempo_init(l_mp_tables)  !aqui se leen las tablas de tempo
+        call init_tempo_clouddroplets_forMPAS(mesh,sfc_input,diag_physics)
+        !fue creada, ver mpas_atmphys_init_microphysics.F
 
      case("mp_wsm6")
         call mp_wsm6_init(den0=rho_a,denr=rho_r,dens=rho_s,cl=cliq,cpv=cpv, &
@@ -414,7 +443,7 @@
        istep = 1
        call mpas_timer_start('Thompson_duplicated')
        do while (istep .le. n_microp)
-       call mp_gt_driver_duplicated( &
+       call mp_gt_duplicated_driver( &
                   th        = th_p        , qv         = qv_p         , qc         = qc_p         , &
                   qr        = qr_p        , qi         = qi_p         , qs         = qs_p         , &
                   qg        = qg_p        , ni         = ni_p         , nr         = nr_p         , &
@@ -433,6 +462,30 @@
        istep = istep + 1
        enddo
        call mpas_timer_stop('Thompson_duplicated')
+
+    case ("mp_tempo")
+       istep = 1
+       call mpas_timer_start('Tempo')
+       do while (istep .le. n_microp)
+       call mp_gt_driver( &
+                  th        = th_p        , qv         = qv_p         , qc         = qc_p         , &
+                  qr        = qr_p        , qi         = qi_p         , qs         = qs_p         , &
+                  qg        = qg_p        , ni         = ni_p         , nr         = nr_p         , &
+                  pii       = pi_p        , p          = pres_p       , dz         = dz_p         , &
+                  w         = w_p         , dt_in      = dt_microp    , itimestep  = itimestep    , &
+                  rainnc    = rainnc_p    , rainncv    = rainncv_p    , snownc     = snownc_p     , &
+                  snowncv   = snowncv_p   , graupelnc  = graupelnc_p  , graupelncv = graupelncv_p , &
+                  sr        = sr_p        , rainprod   = rainprod_p   , evapprod   = evapprod_p   , &
+                  re_cloud  = recloud_p   , re_ice     = reice_p      , re_snow    = resnow_p     , &
+                  has_reqc  = has_reqc    , has_reqi   = has_reqi     , has_reqs   = has_reqs     , &
+                  ntc       = ntc_p       , muc        = muc_p        ,                             &
+                  ids = ids , ide = ide , jds = jds , jde = jde , kds = kds , kde = kde           , &
+                  ims = ims , ime = ime , jms = jms , jme = jme , kms = kms , kme = kme           , &
+                  its = its , ite = ite , jts = jts , jte = jte , kts = kts , kte = kte             &
+                           )
+       istep = istep + 1
+       enddo
+       call mpas_timer_stop('Tempo')
 
     case ("mp_wsm6")
        call mpas_timer_start('mp_wsm6')
@@ -470,8 +523,11 @@
     !ensure that we only call compute_radar_reflectivity() if we are using an MPS that supports
     !the computation of simulated radar reflectivity:
     if(trim(microp_scheme) == "mp_wsm6"     .or. &
-       trim(microp_scheme) == "mp_thompson") then
-       call compute_radar_reflectivity(configs,diag_physics,its,ite)
+       trim(microp_scheme) == "mp_thompson" .or. &
+       trim(microp_scheme) == "mp_tempo"    .or. &
+       trim(microp_scheme) == "mp_thompson_duplicated") then  !fue adicionado
+       call compute_radar_reflectivity(configs,diag_physics,its,ite) !verificar como el nuevo graupel va a ser tratado
+                                                                     !inclusive al tratar tempo
     else
        call mpas_log_write('*** NOTICE: NOT computing simulated radar reflectivity')
        call mpas_log_write('            since WSM6 or Thompson microphysics scheme was not selected')
@@ -544,7 +600,7 @@
 !variables specific to different cloud microphysics schemes:
  microp_select: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6")
+    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated","mp_tempo")
        do j = jts, jte
        do i = its, ite
           snowncv_p(i,j)    = 0._RKIND
@@ -638,7 +694,7 @@
 !variables specific to different cloud microphysics schemes:
  microp_select_init: select case(microp_scheme)
 
-    case ("mp_thompson","mp_wsm6")
+    case ("mp_thompson","mp_wsm6","mp_thompson_duplicated","mp_tempo")
        do j = jts,jte
        do i = its,ite
           !time-step precipitation:
@@ -816,10 +872,63 @@
              qg1d(k)  = qg_p(i,k,j)
              nr1d(k)  = nr_p(i,k,j)
              dBZ1d(k) = -35._RKIND
-             zp(k) = z_p(i,k,j) - z_p(i,1,j)+0.5*dz_p(i,1,j) !height AGL
+             zp(k) = z_p(i,k,j) - z_p(i,1,j)+0.5*dz_p(i,1,j) ! height AGL
           enddo
 
-          call calc_refl10cm_duplicated(qv1d,qc1d,qr1d,nr1d,qs1d,qg1d,t1d,p1d,dBZ1d,kts,kte,i,j)
+          call calc_refl10cm(qv1d,qc1d,qr1d,nr1d,qs1d,qg1d,t1d,p1d,dBZ1d,kts,kte,i,j)
+
+          kp = 1
+          do k = kts,kte
+             dBZ1d(k) = max(-35._RKIND,dBZ1d(k))
+             if(zp(k) .lt. 1000.) kp = k
+          enddo
+          refl10cm_max(i) = maxval(dBZ1d(:))
+          w1 = (zp(kp+1)-1000.)/(zp(kp+1)-zp(kp))
+          w2 = 1.0 - w1
+          refl10cm_1km(i) = w1*dBZ1d(kp) + w2*dBZ1d(kp+1)
+          refl10cm_1km_max(i) = max(refl10cm_1km_max(i),refl10cm_1km(i))
+       enddo
+       enddo
+
+       if(allocated(p1d)  ) deallocate(p1d  )
+       if(allocated(t1d)  ) deallocate(t1d  )
+       if(allocated(qv1d) ) deallocate(qv1d )
+       if(allocated(qc1d) ) deallocate(qc1d )
+       if(allocated(qr1d) ) deallocate(qr1d )
+       if(allocated(qs1d) ) deallocate(qs1d )
+       if(allocated(qg1d) ) deallocate(qg1d )
+       if(allocated(nr1d) ) deallocate(nr1d )
+       if(allocated(dBz1d)) deallocate(dBZ1d)
+       if(allocated(zp)   ) deallocate(zp   )
+
+    case ("mp_tempo")
+       if(.not.allocated(p1d)  ) allocate(p1d(kts:kte)  )
+       if(.not.allocated(t1d)  ) allocate(t1d(kts:kte)  )
+       if(.not.allocated(qv1d) ) allocate(qv1d(kts:kte) )
+       if(.not.allocated(qc1d) ) allocate(qc1d(kts:kte) )
+       if(.not.allocated(qr1d) ) allocate(qr1d(kts:kte) )
+       if(.not.allocated(qs1d) ) allocate(qs1d(kts:kte) )
+       if(.not.allocated(qg1d) ) allocate(qg1d(kts:kte) )
+       if(.not.allocated(nr1d) ) allocate(nr1d(kts:kte) )
+       if(.not.allocated(dBz1d)) allocate(dBZ1d(kts:kte))
+       if(.not.allocated(zp)   ) allocate(zp(kts:kte)   )
+
+       do j = jts,jte
+       do i = its,ite
+          do k = kts,kte
+             p1d(k) = pres_p(i,k,j)
+             t1d(k) = th_p(i,k,j) * pi_p(i,k,j)
+             qv1d(k)  = qv_p(i,k,j)
+             qc1d(k)  = qc_p(i,k,j)
+             qr1d(k)  = qr_p(i,k,j)
+             qs1d(k)  = qs_p(i,k,j)
+             qg1d(k)  = qg_p(i,k,j)
+             nr1d(k)  = nr_p(i,k,j)
+             dBZ1d(k) = -35._RKIND
+             zp(k) = z_p(i,k,j) - z_p(i,1,j)+0.5*dz_p(i,1,j) ! height AGL
+          enddo
+
+          call calc_refl10cm(qv1d,qc1d,qr1d,nr1d,qs1d,qg1d,t1d,p1d,dBZ1d,kts,kte,i,j)
 
           kp = 1
           do k = kts,kte
